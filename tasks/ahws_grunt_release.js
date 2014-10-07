@@ -8,43 +8,67 @@
 
 'use strict';
 
-module.exports = function(grunt) {
+var exec = require('child_process').exec;
+var replace = require("replace");
+var _ = require("lodash");
 
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
+module.exports = function (grunt) {
 
-  grunt.registerMultiTask('ahws_grunt_release', 'Update bower dependencies to the latest tags in git repo', function() {
-    // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options({
-      punctuation: '.',
-      separator: ', '
-    });
+    grunt.registerMultiTask('ahws_grunt_release', 'Update bower dependencies to the latest tags in git repo', function () {
+        var done = this.async(),
+            after = _.after(this.data.dependencies.length, done);
 
-    // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-      // Concat specified files.
-      var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
+        var options = this.options({
+        });
+
+        var replaceVersionNumber = function (dependency, currentVersion, releaseVersion) {
+            if (!releaseVersion) {
+                grunt.log.errorlns('No version number found for: ' + dependency);
+            }
+
+            grunt.log.writeln('Replace version number for ' + dependency + currentVersion + ' with ' + dependency + "#" + releaseVersion);
+            replace({
+                regex: dependency + currentVersion,
+                replacement: dependency + "#" + releaseVersion,
+                paths: ['bower.json'],
+                recursive: false,
+                silent: false
+            });
+        };
+
+        var findLatestVersionNumber = function (dependency, currentVersion, stdout) {
+            grunt.log.writeln('Find latest version number for ' + dependency);
+            var lines = stdout.toString().split('\n'),
+                latestVersionNumber = false;
+
+            lines.forEach(function (line) {
+                var parts = line.split('/v');
+                if (parts[1]) {
+                    latestVersionNumber = parts[1].replace('^{}', '')
+                }
+            });
+
+            replaceVersionNumber(dependency, currentVersion, latestVersionNumber);
+        };
+
+        var getVersion = function (dependency, currentVersion, gitRepositoryUrl) {
+            exec('git ls-remote ' + gitRepositoryUrl, function (err, stdout, stderr) {
+                if (err) {
+                    grunt.warn(err);
+                } else {
+                    findLatestVersionNumber(dependency, currentVersion, stdout);
+                }
+                after();
+            });
+        };
+
+        for (var dependency in this.data.dependencies) {
+            var gitRepositoryUrl = this.data.dependencies[dependency].replace(/#[a-z0-9.]+/, ''),
+                currentVersion = this.data.dependencies[dependency].match(/#[a-z0-9.]+/)[0];
+            grunt.log.writeln('Getting version for: ' + gitRepositoryUrl);
+            getVersion(dependency, currentVersion, gitRepositoryUrl)
         }
-      }).map(function(filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
-
-      // Handle options.
-      src += options.punctuation;
-
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
-
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
     });
-  });
-
 };
+
+

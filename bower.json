@@ -1,0 +1,19 @@
+{
+    "name": "ecommerce-ah-online-navigation",
+    "version": "0.2.0",
+    "main": "target/war",
+    "ignore": [
+        ".editorconfig",
+        "ci-build.js",
+        ".csslintrc",
+        ".jshintrc"
+    ],
+    "private": true,
+    "dependencies": {
+        "ecommerce-ah-online-settings": "https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-settings#0.2.4",
+        "ecommerce-ah-online-navigation": "https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-navigation#0.2.1"
+    },
+    "resolutions": {
+        "jquery": "=1.11.1"
+    }
+}
