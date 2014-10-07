@@ -15,11 +15,16 @@ var _ = require("lodash");
 module.exports = function (grunt) {
 
     grunt.registerMultiTask('ahws_grunt_release', 'Update bower dependencies to the latest tags in git repo', function () {
-        var done = this.async(),
-            after = _.after(this.data.dependencies.length, done);
 
-        var options = this.options({
-        });
+        var getSize = function (dependencies) {
+            var key, count = 0;
+            for (key in dependencies) {
+                if (dependencies.hasOwnProperty(key)) {
+                    count++;
+                }
+            }
+            return count;
+        };
 
         var replaceVersionNumber = function (dependency, currentVersion, releaseVersion) {
             if (!releaseVersion) {
@@ -52,7 +57,7 @@ module.exports = function (grunt) {
         };
 
         var getVersion = function (dependency, currentVersion, gitRepositoryUrl) {
-            exec('git ls-remote ' + gitRepositoryUrl, function (err, stdout, stderr) {
+            exec('git ls-remote --tags ' + gitRepositoryUrl, function (err, stdout, stderr) {
                 if (err) {
                     grunt.warn(err);
                 } else {
@@ -61,6 +66,13 @@ module.exports = function (grunt) {
                 after();
             });
         };
+
+        var options = this.options({
+        });
+
+        var done = this.async(),
+            after = _.after(getSize(this.data.dependencies), done);
+
 
         for (var dependency in this.data.dependencies) {
             var gitRepositoryUrl = this.data.dependencies[dependency].replace('git+https', 'https').replace(/#[a-z0-9.]+/, ''),

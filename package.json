@@ -1,7 +1,7 @@
 {
     "name": "ahws-grunt-release",
     "description": "Update bower dependencies to the latest tags in git repo",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "homepage": "https://github.com/ahwswebdev/ahws-grunt-release",
     "author": {
         "name": "ahwswebdev",

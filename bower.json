@@ -10,8 +10,8 @@
     ],
     "private": true,
     "dependencies": {
-        "ecommerce-ah-online-settings": "https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-settings#0.2.4",
-        "ecommerce-ah-online-navigation": "https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-navigation#0.2.1"
+        "ecommerce-ah-online-settings": "git+https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-settings#0.2.4",
+        "ecommerce-ah-online-navigation": "git+https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-navigation#0.2.1"
     },
     "resolutions": {
         "jquery": "=1.11.1"
