@@ -34,8 +34,8 @@ module.exports = function (grunt) {
                 options: {
                 },
                 "dependencies": {
-                    "ecommerce-ah-online-settings": "https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-settings#master",
-                    "ecommerce-ah-online-navigation": "https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-navigation#master"
+                    "ecommerce-ah-online-settings": "git+https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-settings#master",
+                    "ecommerce-ah-online-navigation": "git+https://albertheijn.qualogy.com/scm/git/ecommerce-ah-online-navigation#master"
                 }
             }
         },

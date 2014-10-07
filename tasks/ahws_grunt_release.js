@@ -63,7 +63,7 @@ module.exports = function (grunt) {
         };
 
         for (var dependency in this.data.dependencies) {
-            var gitRepositoryUrl = this.data.dependencies[dependency].replace(/#[a-z0-9.]+/, ''),
+            var gitRepositoryUrl = this.data.dependencies[dependency].replace('git+https', 'https').replace(/#[a-z0-9.]+/, ''),
                 currentVersion = this.data.dependencies[dependency].match(/#[a-z0-9.]+/)[0];
             grunt.log.writeln('Getting version for: ' + gitRepositoryUrl);
             getVersion(dependency, currentVersion, gitRepositoryUrl)
