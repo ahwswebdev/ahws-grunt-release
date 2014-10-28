@@ -39,6 +39,8 @@ module.exports = function (grunt) {
                 recursive: false,
                 silent: false
             });
+
+            after();
         };
 
         var findLatestVersionNumber = function (dependency, currentVersion, stdout) {
@@ -63,22 +65,27 @@ module.exports = function (grunt) {
                 } else {
                     findLatestVersionNumber(dependency, currentVersion, stdout);
                 }
-                after();
             });
         };
 
         var options = this.options({
+            branch: false
         });
 
         var done = this.async(),
             after = _.after(getSize(this.data.dependencies), done);
 
-
         for (var dependency in this.data.dependencies) {
             var gitRepositoryUrl = this.data.dependencies[dependency].replace('git+https', 'https').replace(/#[a-z0-9.]+/, ''),
                 currentVersion = this.data.dependencies[dependency].match(/#[a-z0-9.]+/)[0];
-            grunt.log.writeln('Getting version for: ' + gitRepositoryUrl);
-            getVersion(dependency, currentVersion, gitRepositoryUrl)
+
+            if (options.branch) {
+                grunt.log.writeln('Setting version for: ' + gitRepositoryUrl + ' from version: ' + currentVersion + ' to branch: ' + options.branch);
+                replaceVersionNumber(dependency, currentVersion, options.branch)
+            } else {
+                grunt.log.writeln('Getting version for: ' + gitRepositoryUrl + ' with version: ' + currentVersion);
+                getVersion(dependency, currentVersion, gitRepositoryUrl)
+            }
         }
     });
 };
