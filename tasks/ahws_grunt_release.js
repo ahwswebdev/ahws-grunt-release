@@ -36,15 +36,15 @@ module.exports = function (grunt) {
             done = this.async(),
             after = lodash.after(getSize(bowerConfig.dependencies), done),
 
-            replaceVersionNumber = function (dependency, currentVersion, releaseVersion) {
+            replaceVersionNumber = function (gitRepositoryUrl, currentVersion, releaseVersion) {
                 if (!releaseVersion) {
-                    grunt.log.errorlns('No version number found for: ' + dependency);
+                    grunt.log.errorlns('No version number found for: ' + gitRepositoryUrl);
                 }
 
-                grunt.log.writeln('Replace version number for ' + dependency + currentVersion + ' with ' + dependency + "#" + releaseVersion);
+                grunt.log.writeln('Replace version number for ' + gitRepositoryUrl + currentVersion + ' with ' + gitRepositoryUrl + "#" + releaseVersion);
                 replace({
-                    regex: dependency + currentVersion,
-                    replacement: dependency + "#" + releaseVersion,
+                    regex: gitRepositoryUrl + currentVersion,
+                    replacement: gitRepositoryUrl + "#" + releaseVersion,
                     paths: ['bower.json'],
                     recursive: false,
                     silent: false
@@ -53,8 +53,8 @@ module.exports = function (grunt) {
                 after();
             },
 
-            findLatestVersionNumber = function (dependency, currentVersion, stdout) {
-                grunt.log.writeln('Find latest version number for ' + dependency);
+            findLatestVersionNumber = function (gitRepositoryUrl, currentVersion, stdout) {
+                grunt.log.writeln('Find latest version number for ' + gitRepositoryUrl);
                 var lines = stdout.toString().split('\n'),
                     latestVersionNumber = false;
 
@@ -65,15 +65,15 @@ module.exports = function (grunt) {
                     }
                 });
 
-                replaceVersionNumber(dependency, currentVersion, latestVersionNumber);
+                replaceVersionNumber(gitRepositoryUrl, currentVersion, latestVersionNumber);
             },
 
-            getVersion = function (dependency, currentVersion, gitRepositoryUrl) {
+            getVersion = function (gitRepositoryUrl, currentVersion) {
                 exec('git ls-remote --tags ' + gitRepositoryUrl, function (err, stdout) {
                     if (err) {
                         grunt.warn(err);
                     } else {
-                        findLatestVersionNumber(dependency, currentVersion, stdout);
+                        findLatestVersionNumber(gitRepositoryUrl, currentVersion, stdout);
                     }
                 });
             },
@@ -84,10 +84,10 @@ module.exports = function (grunt) {
 
                 if (options.branch) {
                     grunt.log.writeln('Setting version for: ' + gitRepositoryUrl + ' from version: ' + currentVersion + ' to branch: ' + options.branch);
-                    replaceVersionNumber(dependency, currentVersion, options.branch);
+                    replaceVersionNumber(gitRepositoryUrl, currentVersion, options.branch);
                 } else {
                     grunt.log.writeln('Getting version for: ' + gitRepositoryUrl + ' with version: ' + currentVersion);
-                    getVersion(dependency, currentVersion, gitRepositoryUrl);
+                    getVersion(gitRepositoryUrl, currentVersion);
                 }
             };
 
