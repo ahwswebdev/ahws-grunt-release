@@ -79,7 +79,7 @@ module.exports = function (grunt) {
             },
 
             determineTask = function (dependency) {
-                var gitRepositoryUrl = dependency.replace('git+https', 'https').replace(/#[a-z0-9.]+/, ''),
+                var gitRepositoryUrl = dependency.replace('git+https', 'https').replace(/#[a-z0-9.\/]+/, ''),
                     currentVersion = dependency.match(/#[a-z0-9.]+/)[0];
 
                 if (options.branch) {
