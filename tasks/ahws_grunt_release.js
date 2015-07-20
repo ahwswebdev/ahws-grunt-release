@@ -69,7 +69,7 @@ module.exports = function (grunt) {
             },
 
             getVersion = function (gitRepositoryUrl, currentVersion) {
-                exec('git ls-remote --tags ' + gitRepositoryUrl + ' | grep -v {} | awk -F\/ \'{printf("%s\\n", $3)}\' | sort -n -t. -k1,1 -k2,2 -k3,3 -k4,4', function (err, stdout) {
+                exec('git ls-remote --tags ' + gitRepositoryUrl + ' | grep -v {} | awk -F\/ \'{printf("%s\\n", $3)}\' | sort -n -t. -k1,1', function (err, stdout) {
                     if (err) {
                         grunt.warn(err);
                     } else {
