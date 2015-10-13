@@ -1,7 +1,7 @@
 /*globals require, module*/
-var exec = require('child_process').exec,
-    replace = require("replace"),
-    lodash = require("lodash");
+var replace = require("replace"),
+    lodash = require("lodash"),
+    latestVersion = require('./utils/latest-version');
 
 /*
  * ahws-grunt-release
@@ -13,6 +13,8 @@ var exec = require('child_process').exec,
 module.exports = function (grunt) {
 
     'use strict';
+
+    latestVersion = latestVersion(grunt);
 
     grunt.registerMultiTask('ahws_grunt_release', 'Update bower dependencies to the latest tags in git repo', function () {
 
@@ -53,31 +55,6 @@ module.exports = function (grunt) {
                 after();
             },
 
-            findLatestVersionNumber = function (gitRepositoryUrl, currentVersion, stdout) {
-                grunt.log.writeln('Find latest version number for ' + gitRepositoryUrl);
-                var lines = stdout.toString().split('\n'),
-                    latestVersionNumber = false;
-
-                lines.forEach(function (line) {
-                    var versionNumber = line.replace('v', '');
-                    if (versionNumber.trim().length !== 0) {
-                        latestVersionNumber = versionNumber;
-                    }
-                });
-
-                replaceVersionNumber(gitRepositoryUrl, currentVersion, latestVersionNumber);
-            },
-
-            getVersion = function (gitRepositoryUrl, currentVersion) {
-                exec('git ls-remote --tags ' + gitRepositoryUrl + ' | grep -v {} | awk -F\/ \'{printf("%s\\n", $3)}\' | sort -n -t. -k1,1', function (err, stdout) {
-                    if (err) {
-                        grunt.warn(err);
-                    } else {
-                        findLatestVersionNumber(gitRepositoryUrl, currentVersion, stdout);
-                    }
-                });
-            },
-
             determineTask = function (dependency) {
                 var gitRepositoryUrl = dependency.replace('git+https', 'https').replace(/#[a-z0-9.\/]+/, ''),
                     currentVersion = dependency.match(/#[a-z0-9.]+/)[0];
@@ -87,7 +64,10 @@ module.exports = function (grunt) {
                     replaceVersionNumber(gitRepositoryUrl, currentVersion, options.branch);
                 } else {
                     grunt.log.writeln('Getting version for: ' + gitRepositoryUrl + ' with version: ' + currentVersion);
-                    getVersion(gitRepositoryUrl, currentVersion);
+
+                    latestVersion.getLatestVersionNumber(gitRepositoryUrl).then(function (version) {
+                        replaceVersionNumber(gitRepositoryUrl, currentVersion, version);
+                    });
                 }
             };
 
