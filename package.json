@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "promise": "^7.0.4",
+    "replace": "^0.3.0",
     "semver": "^5.0.3"
   },
   "devDependencies": {
